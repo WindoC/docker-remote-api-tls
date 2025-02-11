@@ -1,3 +1,47 @@
+# windoac/docker-remote-api-tls
+
+forked from [kekru/docker-remote-api-tls](https://github.com/kekru/docker-remote-api-tls)
+
+All of the setting should be same. Just add this for ARM support.
+
+## Changed
+
+- Add ARM support
+- Auto generate `CREATE_CERTS_WITH_PW` if not set
+- `CERT_EXPIRATION_DAYS` & `CA_EXPIRATION_DAYS` default is 3650 days
+
+## Quick use
+```yml
+version: "3.8"
+
+volumes:
+  certs:
+# add your volume setting here
+
+services:
+  remote-api:
+    image: windoac/docker-remote-api-tls:latest
+    ports:
+      - 2376:443
+    environment:
+      - CERT_HOSTNAME=remote-api.example.com
+    volumes:
+      - certs:/data/certs
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+```
+
+## debug
+
+```bash
+# build
+docker build -t docker-remote-api-tls .
+
+# test run
+docker run -it --rm docker-remote-api-tls
+```
+
+# from forked kekru/docker-remote-api-tls
+
 # Docker Remote API with TLS client authentication via container
 
 This images makes you publish your Docker Remote API by a container.

@@ -7,13 +7,14 @@ COPY resources/create-certs.sh /script/create-certs.sh
 COPY resources/nginx-cert.conf /etc/nginx/nginx.conf
 COPY resources/entrypoint.sh /docker-entrypoint.d/30_entrypoint.sh
 
-RUN chmod +x /script/create-certs.sh /docker-entrypoint.d/30_entrypoint.sh
+RUN chmod +x /script/create-certs.sh /docker-entrypoint.d/30_entrypoint.sh \
+ && mkdir -p /data/certs
 
 ENV CREATE_CERTS_WITH_PW="" \
     CERTS_DIR=/data/certs \
     CERT_HOSTNAME="abc.127.0.0.1.nip.io" \
-    CERT_EXPIRATION_DAYS="365" \
-    CA_EXPIRATION_DAYS="900"
+    CERT_EXPIRATION_DAYS="3650" \
+    CA_EXPIRATION_DAYS="3650"
 
 HEALTHCHECK --start-period=1s \
             --interval=5s \

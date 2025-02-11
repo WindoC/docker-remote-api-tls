@@ -10,28 +10,28 @@ if [ -n "$CERTS_PASSWORD_FILE" ]; then
   CREATE_CERTS_WITH_PW="$(cat $CERTS_PASSWORD_FILE)"
 fi
 
-if [ -n "$CREATE_CERTS_WITH_PW" ]; then
-  if [ -z "$(ls -A $CERTS_DIR)" ]; then
+# create CERTS_PW if not set
+CREATE_CERTS_WITH_PW=${CREATE_CERTS_WITH_PW:-$(openssl rand -base64 12)}
 
-    echo "Create CA cert"
-    /script/create-certs.sh -m ca -pw $CREATE_CERTS_WITH_PW -t $CERTS_DIR -e $CA_EXPIRATION_DAYS
-    echo "Create server cert"
-    /script/create-certs.sh -m server -h $CERT_HOSTNAME -pw $CREATE_CERTS_WITH_PW -t $CERTS_DIR -e $CERT_EXPIRATION_DAYS
-    echo "Create client cert"
-    /script/create-certs.sh -m client -h testClient -pw $CREATE_CERTS_WITH_PW -t $CERTS_DIR -e $CERT_EXPIRATION_DAYS
+if [ -z "$(ls -A $CERTS_DIR)" ]; then
 
-    mkdir $CERTS_DIR/client
-    mv $CERTS_DIR/ca.pem $CERTS_DIR/ca-cert.pem
-    cp $CERTS_DIR/ca-cert.pem $CERTS_DIR/client/ca.pem
-    mv $CERTS_DIR/client-testClient-cert.pem $CERTS_DIR/client/cert.pem
-    mv $CERTS_DIR/client-testClient-key.pem $CERTS_DIR/client/key.pem
-    chmod 444 $CERTS_DIR/client/key.pem
+  echo CREATE_CERTS_WITH_PW = $CREATE_CERTS_WITH_PW
 
-  else
+  echo "Create CA cert"
+  /script/create-certs.sh -m ca -pw $CREATE_CERTS_WITH_PW -t $CERTS_DIR -e $CA_EXPIRATION_DAYS
+  echo "Create server cert"
+  /script/create-certs.sh -m server -h $CERT_HOSTNAME -pw $CREATE_CERTS_WITH_PW -t $CERTS_DIR -e $CERT_EXPIRATION_DAYS
+  echo "Create client cert"
+  /script/create-certs.sh -m client -h testClient -pw $CREATE_CERTS_WITH_PW -t $CERTS_DIR -e $CERT_EXPIRATION_DAYS
 
-    echo "$CERTS_DIR is not empty. Not creating certs."
-  fi
+  mkdir $CERTS_DIR/client
+  mv $CERTS_DIR/ca.pem $CERTS_DIR/ca-cert.pem
+  cp $CERTS_DIR/ca-cert.pem $CERTS_DIR/client/ca.pem
+  mv $CERTS_DIR/client-testClient-cert.pem $CERTS_DIR/client/cert.pem
+  mv $CERTS_DIR/client-testClient-key.pem $CERTS_DIR/client/key.pem
+  chmod 444 $CERTS_DIR/client/key.pem
 
-else  
-  echo "CREATE_CERTS_WITH_PW is not set. Not creating certs."
+else
+
+  echo "$CERTS_DIR is not empty. Not creating certs."
 fi
